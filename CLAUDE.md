@@ -19,7 +19,7 @@ To verify a change, reload the page and play. There are no automated checks.
 
 ## Architecture
 
-All logic lives in `game.js`. It is one non-module script (`'use strict'`) loaded at the end of `index.html`, and it relies on the DOM element IDs defined there (`board`, `next-canvas`, `score`, `lines`, `level`, `overlay`, `overlay-title`, `overlay-score`, `restart-btn`). If you rename an ID in one file, rename it in the other.
+All logic lives in `game.js`. It is one non-module script (`'use strict'`) loaded at the end of `index.html`, and it relies on the DOM element IDs defined there (`board`, `next-canvas`, `score`, `lines`, `level`, `overlay`, `overlay-title`, `overlay-score`, `restart-btn`, `theme-toggle`, `theme-label`). If you rename an ID in one file, rename it in the other.
 
 Key design points that span the code:
 
