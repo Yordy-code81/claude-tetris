@@ -4,17 +4,49 @@ const COLS = 10;
 const ROWS = 20;
 const BLOCK = 30;
 
-const COLORS = [
-  null,
-  '#4dd0e1', // I - cyan
-  '#ffd54f', // O - yellow
-  '#ba68c8', // T - purple
-  '#81c784', // S - green
-  '#e57373', // Z - red
-  '#90caf9', // J - azul pálido
-  '#ffb74d', // L - orange
-  '#b0bec5', // N - tuerca (gris metálico)
-];
+// ---- Skins: cada una aporta su paleta (índice = tipo de pieza) y su función de dibujo ----
+const SKINS = {
+  retro: {
+    label: 'Retro',
+    colors: [
+      null,
+      '#4dd0e1', // I - cyan
+      '#ffd54f', // O - yellow
+      '#ba68c8', // T - purple
+      '#81c784', // S - green
+      '#e57373', // Z - red
+      '#90caf9', // J - azul pálido
+      '#ffb74d', // L - orange
+      '#b0bec5', // N - tuerca (gris metálico)
+    ],
+    drawCell: drawRetroCell,
+  },
+  neon: {
+    label: 'Neón',
+    colors: [null, '#00f0ff', '#fff200', '#d400ff', '#39ff14', '#ff073a', '#2979ff', '#ff8c00', '#e0e0ff'],
+    grid: '#101826', // el tablero neón siempre es negro, también en modo claro
+    glow: 14,
+    drawCell: drawNeonCell,
+  },
+  pastel: {
+    label: 'Pastel',
+    colors: [null, '#a8e6ef', '#fdf1a8', '#d9c2f0', '#bfe8c3', '#f7b7c3', '#b9d3f7', '#fcd5b0', '#d6dbe3'],
+    drawCell: drawPastelCell,
+  },
+  pixel: {
+    label: 'Pixel art',
+    colors: [null, '#00bcd4', '#fbc02d', '#8e24aa', '#43a047', '#e53935', '#1e88e5', '#fb8c00', '#90a4ae'],
+    drawCell: drawPixelCell,
+  },
+};
+const DEFAULT_SKIN = 'retro';
+
+let skin = DEFAULT_SKIN;
+try {
+  const saved = localStorage.getItem('skin');
+  if (saved && SKINS[saved]) skin = saved;
+} catch (e) {}
+let COLORS = SKINS[skin].colors;
 
 const NUT = 8; // pieza de reto: anillo 3×3 con hueco central
 
@@ -81,6 +113,7 @@ const PLAYER_KEY = 'tetris-player';
 const MAX_RECORDS = 5;
 const NAME_MAX = 12;
 const DEFAULT_NAME = 'Jugador';
+const skinSelect = document.getElementById('skin-select');
 
 let theme = 'dark';
 try { if (localStorage.getItem('theme') === 'light') theme = 'light'; } catch (e) {}
@@ -233,29 +266,111 @@ function updateHUD() {
 
 function drawBlock(context, x, y, colorIndex, size, alpha) {
   if (!colorIndex) return;
-  const color = COLORS[colorIndex];
+  context.save();
   context.globalAlpha = alpha ?? 1;
+  SKINS[skin].drawCell(context, x * size, y * size, size, COLORS[colorIndex]);
+  context.restore();
+}
+
+// Retro: bloque cuadrado de color plano con una franja de brillo arriba
+function drawRetroCell(context, px, py, size, color) {
   context.fillStyle = color;
-  context.fillRect(x * size + 1, y * size + 1, size - 2, size - 2);
-  // highlight
+  context.fillRect(px + 1, py + 1, size - 2, size - 2);
   context.fillStyle = THEMES[theme].shine;
-  context.fillRect(x * size + 1, y * size + 1, size - 2, 4);
-  context.globalAlpha = 1;
+  context.fillRect(px + 1, py + 1, size - 2, 4);
+}
+
+// Neón: relleno oscuro translúcido + contorno brillante con resplandor (shadowBlur)
+function drawNeonCell(context, px, py, size, color) {
+  context.shadowColor = color;
+  context.shadowBlur = SKINS.neon.glow;
+  context.fillStyle = color;
+  context.globalAlpha *= 0.25;
+  context.fillRect(px + 3, py + 3, size - 6, size - 6);
+  context.globalAlpha /= 0.25;
+  context.strokeStyle = color;
+  context.lineWidth = 2;
+  context.strokeRect(px + 3, py + 3, size - 6, size - 6);
+  // núcleo blanco para dar sensación de tubo de neón
+  context.shadowBlur = 0;
+  context.strokeStyle = 'rgba(255,255,255,0.55)';
+  context.lineWidth = 0.75;
+  context.strokeRect(px + 3, py + 3, size - 6, size - 6);
+}
+
+function roundedRectPath(context, x, y, w, h, r) {
+  context.beginPath();
+  context.moveTo(x + r, y);
+  context.arcTo(x + w, y, x + w, y + h, r);
+  context.arcTo(x + w, y + h, x, y + h, r);
+  context.arcTo(x, y + h, x, y, r);
+  context.arcTo(x, y, x + w, y, r);
+  context.closePath();
+}
+
+// Pastel: esquinas redondeadas, borde suave más oscuro y un brillo difuso
+function drawPastelCell(context, px, py, size, color) {
+  const r = size * 0.22;
+  roundedRectPath(context, px + 1.5, py + 1.5, size - 3, size - 3, r);
+  context.fillStyle = color;
+  context.fill();
+  context.strokeStyle = 'rgba(80,60,100,0.25)';
+  context.lineWidth = 1.5;
+  context.stroke();
+  roundedRectPath(context, px + size * 0.2, py + size * 0.16, size * 0.6, size * 0.22, size * 0.11);
+  context.fillStyle = 'rgba(255,255,255,0.45)';
+  context.fill();
+}
+
+// Pixel art: el bloque se divide en una rejilla de 6×6 "píxeles" con bisel y textura
+const PIXEL_PATTERN = [
+  'LLLLLD',
+  'LHH..D',
+  'LH...D',
+  'L..s.D',
+  'L.s..D',
+  'DDDDDD',
+];
+const PIXEL_SHADES = {
+  L: 'rgba(255,255,255,0.35)', // bisel claro
+  H: 'rgba(255,255,255,0.6)',  // brillo
+  D: 'rgba(0,0,0,0.35)',       // bisel oscuro
+  s: 'rgba(0,0,0,0.15)',       // motas de textura
+};
+function drawPixelCell(context, px, py, size, color) {
+  context.imageSmoothingEnabled = false;
+  context.fillStyle = color;
+  context.fillRect(px, py, size, size);
+  const n = PIXEL_PATTERN.length;
+  const p = size / n;
+  for (let r = 0; r < n; r++) {
+    for (let c = 0; c < n; c++) {
+      const shade = PIXEL_SHADES[PIXEL_PATTERN[r][c]];
+      if (!shade) continue;
+      context.fillStyle = shade;
+      context.fillRect(Math.round(px + c * p), Math.round(py + r * p), Math.ceil(p), Math.ceil(p));
+    }
+  }
 }
 
 // Dibuja el agujero redondo de la tuerca en la celda central (hx, hy)
 function drawNutHole(context, hx, hy, size, alpha) {
+  context.save();
   context.globalAlpha = alpha ?? 1;
+  if (SKINS[skin].glow) {
+    context.shadowColor = COLORS[NUT];
+    context.shadowBlur = SKINS[skin].glow;
+  }
   context.strokeStyle = COLORS[NUT];
   context.lineWidth = Math.max(2, size * 0.14);
   context.beginPath();
   context.arc((hx + 0.5) * size, (hy + 0.5) * size, size * 0.3, 0, Math.PI * 2);
   context.stroke();
-  context.globalAlpha = 1;
+  context.restore();
 }
 
 function drawGrid() {
-  ctx.strokeStyle = THEMES[theme].grid;
+  ctx.strokeStyle = SKINS[skin].grid || THEMES[theme].grid;
   ctx.lineWidth = 0.5;
   for (let c = 1; c < COLS; c++) {
     ctx.beginPath();
@@ -608,6 +723,7 @@ function init() {
 const GAME_KEYS = new Set(['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'KeyX', 'Space']);
 
 document.addEventListener('keydown', e => {
+  if (e.target === skinSelect) return; // las teclas pertenecen al selector mientras tenga el foco
   if (e.target === playerNameInput) return; // escribiendo el nombre
   // con el menú abierto el juego no recibe ninguna tecla
   if (paused) { handleMenuKey(e); return; }
@@ -686,6 +802,33 @@ themeToggle.addEventListener('click', () => {
 });
 
 applyTheme(theme, false);
+
+// Cambia la skin sin recargar: nueva paleta + nueva función de dibujo
+function applySkin(name, save) {
+  if (!SKINS[name]) name = DEFAULT_SKIN;
+  skin = name;
+  COLORS = SKINS[name].colors;
+  document.documentElement.dataset.skin = name;
+  skinSelect.value = name;
+  if (save) {
+    try { localStorage.setItem('skin', name); } catch (e) {}
+  }
+  if (current) { draw(); drawNext(); }
+}
+
+for (const [key, def] of Object.entries(SKINS)) {
+  const opt = document.createElement('option');
+  opt.value = key;
+  opt.textContent = def.label;
+  skinSelect.appendChild(opt);
+}
+
+skinSelect.addEventListener('change', () => {
+  applySkin(skinSelect.value, true);
+  skinSelect.blur(); // devuelve el foco al juego para que las flechas no cambien la skin
+});
+
+applySkin(skin, false);
 
 // Estado inicial: tablero vacío y pantalla de inicio con los récords
 board = createBoard();
