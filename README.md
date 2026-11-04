@@ -44,6 +44,7 @@ Es una versión jugable del Tetris clásico con todas las mecánicas que esperar
 - **Niveles** que aumentan cada 10 líneas y aceleran la caída.
 - **Menú de pausa** (`P` o `Esc`) con opciones *Reanudar*, *Reiniciar*, *Ver controles* y selector de **nivel inicial** (1–10) para la próxima partida, que se guarda en `localStorage`. Mientras está abierto, el juego no recibe teclas, y las teclas pulsadas en el menú se ignoran hasta soltarlas para evitar movimientos accidentales al volver.
 - **Game Over** con opción de reinicio.
+- **Tabla de récords local** (`localStorage`): top 5 con nombre del jugador, mejor combo y líneas máximas, visible en la pantalla de inicio y al terminar la partida, con botón para borrarla.
 - **Modo claro / oscuro** con un interruptor sobre el tablero. Por defecto es oscuro y la elección se guarda en `localStorage`.
 
 ---
@@ -104,7 +105,7 @@ Define la estructura visual:
 
 - Un `<canvas id="board">` de **300 × 600** píxeles donde se renderiza el tablero.
 - Un panel lateral con `SCORE`, `LINES`, `LEVEL`, vista de la siguiente pieza y la lista de controles.
-- Un overlay para los estados **PAUSA** (con el menú de pausa) y **GAME OVER**.
+- Un overlay para la pantalla de inicio y los estados **PAUSA** (con el menú de pausa) y **GAME OVER**, con la tabla de récords.
 
 ### 2. `style.css`
 
