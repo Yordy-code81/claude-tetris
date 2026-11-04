@@ -29,7 +29,8 @@ Key design points that span the code:
 - **Collision** (`collide(shape, x, y)`) is the single source of truth for movement, rotation, the ghost piece (`ghostY`), locking and game over. Cells with `y < 0` are allowed above the board.
 - **Game loop**: `requestAnimationFrame` accumulates `dt` into `dropAccum` and applies gravity when it exceeds `dropInterval`. Pause and game over stop the loop with `cancelAnimationFrame(animId)`, and resume restarts it by calling `loop()` with a fresh `lastTime`.
 - **Lock sequence**: `lockPiece()` → `merge()` → `clearLines()` (which updates score, level and speed) → `spawn()`. Game over happens in `spawn()` when the new piece immediately collides.
-- **Overlay**: a single `#overlay` element serves both PAUSA and GAME OVER. The text is set in `togglePause()` and `endGame()`, and the `hidden` class toggles it.
+- **Overlay**: a single `#overlay` element serves the start screen, PAUSA and GAME OVER via `showOverlay(mode)` (`start` | `pause` | `gameover`); the `hidden` class toggles it. The page loads with `showStart()` (empty board, `started = false`, `current`/`next` null, so `draw()`/`drawNext()` must tolerate null); `init()` starts a game.
+- **Records**: stored in `localStorage` under `tetris-records` as `{ top: [{name, score, lines}] (max 5), bestCombo, maxLines }`; the last name used is under `tetris-player-name`. `endGame()` always updates `bestCombo`/`maxLines` and, if `qualifies(score)`, creates `pendingRecord`, which is shown highlighted in the table and saved by `commitPending()` (on Guardar, Reiniciar or Enter). A combo is the number of consecutive locks that clear lines (`combo`/`bestCombo`, updated in `clearLines()`); it does not affect the score.
 - **Scoring and speed**: line clears use `LINE_SCORES[n] * level`, hard drop adds +2 per cell and soft drop adds +1 per row. Level is `floor(lines/10)+1` and `dropInterval = max(100, 1000 - (level-1)*90)`.
 
 ## Gotchas
