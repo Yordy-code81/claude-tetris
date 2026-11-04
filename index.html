@@ -7,8 +7,8 @@
   <script>
     try {
       if (localStorage.getItem('theme') === 'light') document.documentElement.dataset.theme = 'light';
-      var skin = localStorage.getItem('skin');
-      if (skin) document.documentElement.dataset.skin = skin;
+      // sin variables globales: game.js declara `let skin` y chocaría con un `var skin`
+      if (localStorage.getItem('skin')) document.documentElement.dataset.skin = localStorage.getItem('skin');
     } catch (e) {}
   </script>
   <link rel="stylesheet" href="style.css" />
