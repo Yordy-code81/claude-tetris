@@ -19,7 +19,7 @@ To verify a change, reload the page and play. There are no automated checks.
 
 ## Architecture
 
-All logic lives in `game.js`. It is one non-module script (`'use strict'`) loaded at the end of `index.html`, and it relies on the DOM element IDs defined there (`board`, `next-canvas`, `score`, `lines`, `level`, `overlay`, `overlay-title`, `overlay-score`, `restart-btn`, `theme-toggle`, `theme-label`). If you rename an ID in one file, rename it in the other.
+All logic lives in `game.js`. It is one non-module script (`'use strict'`) loaded at the end of `index.html`, and it relies on the DOM element IDs defined there (`board`, `next-canvas`, `score`, `lines`, `level`, `overlay`, `overlay-title`, `overlay-score`, `overlay-stats`, `restart-btn`, `theme-toggle`, `theme-label`, plus the records UI: `name-form`, `new-record-msg`, `player-name`, `records`, `records-body`, `best-combo`, `best-lines`, `best-combo-box`, `best-lines-box`, `reset-records-btn`). If you rename an ID in one file, rename it in the other.
 
 Key design points that span the code:
 
@@ -29,7 +29,8 @@ Key design points that span the code:
 - **Collision** (`collide(shape, x, y)`) is the single source of truth for movement, rotation, the ghost piece (`ghostY`), locking and game over. Cells with `y < 0` are allowed above the board.
 - **Game loop**: `requestAnimationFrame` accumulates `dt` into `dropAccum` and applies gravity when it exceeds `dropInterval`. Pause and game over stop the loop with `cancelAnimationFrame(animId)`, and resume restarts it by calling `loop()` with a fresh `lastTime`.
 - **Lock sequence**: `lockPiece()` → `merge()` → `clearLines()` (which updates score, level and speed) → `spawn()`. Game over happens in `spawn()` when the new piece immediately collides.
-- **Overlay**: a single `#overlay` element serves both PAUSA and GAME OVER. The text is set in `togglePause()` and `endGame()`, and the `hidden` class toggles it.
+- **Overlay**: a single `#overlay` element serves the start screen, PAUSA and GAME OVER via `showOverlay(mode)` (`'start' | 'pause' | 'over'`, stored in `data-mode`). The text is set in `showStartScreen()`, `togglePause()` and `endGame()`, and the `hidden` class toggles it. The game does not run until "Jugar" calls `init()` (`started` flag; `draw()` only paints the grid before that).
+- **Records**: stored in `localStorage` under `tetris-records` as `{ scores: [{name, score, lines}], bestCombo, maxLines }` (top 5, sorted desc); the last name used is under `tetris-player`. At game over, `bestCombo`/`maxLines` are updated always; if the score enters the top it becomes `pendingEntry` (highlighted, name input shown) until `commitPending()` saves it, which also runs from `init()` so restarting never drops a record. A combo is the number of consecutive locks that clear at least one line (`combo`/`maxCombo`, updated in `clearLines()`).
 - **Scoring and speed**: line clears use `LINE_SCORES[n] * level`, hard drop adds +2 per cell and soft drop adds +1 per row. Level is `floor(lines/10)+1` and `dropInterval = max(100, 1000 - (level-1)*90)`.
 
 ## Gotchas
