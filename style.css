@@ -240,3 +240,161 @@ kbd {
 #restart-btn:hover {
   background: var(--accent-hover);
 }
+
+/* ---- Records ---- */
+.records.hidden,
+.records .hidden {
+  display: none;
+}
+
+.records {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: 280px;
+}
+
+.start-title {
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: 4px;
+  color: var(--accent);
+}
+
+.new-record {
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  color: var(--btn-text);
+  background: var(--accent);
+  border-radius: 12px;
+  padding: 3px 12px;
+}
+
+.record-form {
+  display: flex;
+  gap: 6px;
+}
+
+#record-name {
+  width: 150px;
+  background: var(--panel-bg);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 6px 8px;
+  font-size: 13px;
+  font-family: inherit;
+}
+
+#record-name:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.records-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 13px;
+  color: var(--text);
+}
+
+.records-table th {
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: 10px;
+  letter-spacing: 1px;
+  color: var(--muted);
+  font-weight: 600;
+  padding: 2px 4px;
+}
+
+.records-table td {
+  padding: 3px 4px;
+  border-top: 1px solid var(--border);
+}
+
+.records-table td:nth-child(2) {
+  text-align: left;
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.records-table td:nth-child(n+3) {
+  text-align: right;
+}
+
+.records-table .record-new td {
+  color: var(--btn-text);
+  background: var(--accent);
+  font-weight: 700;
+}
+
+.records-table .records-empty td {
+  text-align: center;
+  color: var(--text-soft);
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: 12px;
+  border-top: none;
+}
+
+.records-extra {
+  font-size: 12px;
+  color: var(--text-soft);
+}
+
+.records-extra span {
+  font-family: 'Courier New', Courier, monospace;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.start-hint {
+  font-size: 12px;
+  color: var(--text-soft);
+}
+
+#play-btn,
+#save-record-btn {
+  background: var(--accent);
+  color: var(--btn-text);
+  border: none;
+  border-radius: 6px;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 1px;
+  transition: background 0.15s;
+}
+
+#play-btn {
+  margin-top: 8px;
+  padding: 10px 36px;
+  font-size: 14px;
+}
+
+#save-record-btn {
+  padding: 6px 12px;
+  font-size: 13px;
+}
+
+#play-btn:hover,
+#save-record-btn:hover {
+  background: var(--accent-hover);
+}
+
+#reset-records-btn {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--danger);
+  padding: 5px 12px;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+#reset-records-btn:hover {
+  border-color: var(--danger);
+}

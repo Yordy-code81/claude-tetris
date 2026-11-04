@@ -43,6 +43,8 @@ Es una versión jugable del Tetris clásico con todas las mecánicas que esperar
 - **Sistema de puntuación** clásico de Tetris (100 / 300 / 500 / 800 multiplicado por nivel).
 - **Niveles** que aumentan cada 10 líneas y aceleran la caída.
 - **Pausa** y **Game Over** con opción de reinicio.
+- **Pantalla de inicio**: el juego no arranca solo; pulsa **Jugar** o `Enter` para empezar.
+- **Tabla de records local**: las 5 mejores puntuaciones (con nombre, líneas y nivel) se guardan en `localStorage`. Se muestran en la pantalla de inicio y en el Game Over; si tu puntuación entra en el top aparece **¡Nuevo récord!** y un campo para escribir tu nombre, y tu fila queda resaltada. También se guardan el **mejor combo** (bloqueos seguidos que limpian líneas) y las **líneas máximas** de una partida. El botón **Borrar records** los elimina.
 - **Modo claro / oscuro** con un interruptor sobre el tablero. Por defecto es oscuro y la elección se guarda en `localStorage`.
 
 ---
@@ -100,7 +102,8 @@ Define la estructura visual:
 
 - Un `<canvas id="board">` de **300 × 600** píxeles donde se renderiza el tablero.
 - Un panel lateral con `SCORE`, `LINES`, `LEVEL`, vista de la siguiente pieza y la lista de controles.
-- Un overlay para los estados **PAUSA** y **GAME OVER**.
+- Un overlay para los estados **PAUSA** y **GAME OVER** (este último con la tabla de records y el campo de nombre).
+- La pantalla de inicio (`#start-screen`) con los records y los botones **Jugar** y **Borrar records**.
 
 ### 2. `style.css`
 
@@ -123,6 +126,7 @@ Contiene toda la lógica del juego. A grandes rasgos:
 ### Flujo del juego
 
 ```
+showStartScreen()                   → muestra records; "Jugar" / Enter llama a init()
 init()
   ├─ createBoard()                  → matriz vacía
   ├─ next = randomPiece()
@@ -138,7 +142,7 @@ init()
    keydown → mover / rotar / soft-drop / hard-drop / pausa
 ```
 
-Cuando una pieza recién generada ya colisiona al aparecer (`spawn`), se dispara `endGame()` y se muestra el overlay de **Game Over**.
+Cuando una pieza recién generada ya colisiona al aparecer (`spawn`), se dispara `endGame()` y se muestra el overlay de **Game Over**, con la tabla de records y, si procede, el campo para guardar tu nombre.
 
 ---
 
