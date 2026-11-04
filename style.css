@@ -264,22 +264,26 @@ kbd {
   color: var(--accent);
 }
 
-/* ---- Menú (pausa / game over) ---- */
+/* ---- Menú (inicio / pausa / game over) ---- */
 .menu {
   display: flex;
   flex-direction: column;
   gap: 8px;
   width: 200px;
-  margin-top: 8px;
 }
 
-/* En GAME OVER solo se muestran Reiniciar y el nivel inicial */
+/* En INICIO y GAME OVER solo se muestran Jugar/Reiniciar y el nivel inicial */
+.overlay[data-mode="start"] #resume-btn,
+.overlay[data-mode="start"] #controls-btn,
+.overlay[data-mode="start"] #controls-list,
+.overlay[data-mode="start"] .menu-hint,
 .overlay[data-mode="gameover"] #resume-btn,
 .overlay[data-mode="gameover"] #controls-btn,
 .overlay[data-mode="gameover"] #controls-list {
   display: none;
 }
 
+.overlay[data-mode="start"] #restart-btn,
 .overlay[data-mode="gameover"] #restart-btn {
   background: var(--accent);
   color: var(--btn-text);
@@ -370,4 +374,174 @@ kbd {
 .menu-hint {
   font-size: 11px;
   color: var(--text-soft);
+}
+
+#overlay-title.accent {
+  color: var(--accent);
+}
+
+#overlay-score {
+  white-space: pre-line;
+  line-height: 1.5;
+}
+
+/* ---- Récords ---- */
+.records {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: 300px;
+}
+
+.records.hidden,
+.record-form.hidden {
+  display: none;
+}
+
+.records-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  background: var(--panel-bg);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+}
+
+.records-table th {
+  font-size: 10px;
+  letter-spacing: 1px;
+  color: var(--muted);
+  font-weight: 600;
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+}
+
+.records-table td {
+  padding: 5px 8px;
+  color: var(--text);
+  text-align: left;
+}
+
+.records-table th:nth-child(n+3),
+.records-table td:nth-child(n+3) {
+  text-align: right;
+  font-family: 'Courier New', Courier, monospace;
+}
+
+.records-table td:first-child {
+  color: var(--muted);
+  width: 24px;
+}
+
+.records-table td.empty {
+  text-align: center;
+  color: var(--text-soft);
+  font-style: italic;
+  padding: 12px 8px;
+}
+
+.records-table tr.current td {
+  background: var(--accent);
+  color: var(--btn-text);
+  font-weight: 700;
+}
+
+.records-extra {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+}
+
+.records-stat {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 6px 8px;
+  background: var(--panel-bg);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+}
+
+.records-stat span:last-child {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.records-stat.new {
+  border-color: var(--accent);
+}
+
+.records-stat.new .label::after {
+  content: ' ¡NUEVO!';
+  color: var(--accent);
+}
+
+#reset-records-btn {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--text-soft);
+  font-size: 11px;
+  padding: 4px 10px;
+  cursor: pointer;
+}
+
+#reset-records-btn:hover {
+  border-color: var(--danger);
+  color: var(--danger);
+}
+
+/* ---- Formulario de nombre ---- */
+.record-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.record-form label {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.record-form-row {
+  display: flex;
+  gap: 6px;
+}
+
+#record-name {
+  width: 170px;
+  padding: 6px 8px;
+  font-size: 14px;
+  background: var(--panel-bg);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  user-select: text;
+}
+
+#record-name:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+#record-save-btn {
+  background: var(--accent);
+  color: var(--btn-text);
+  border: none;
+  border-radius: 4px;
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+#record-save-btn:hover {
+  background: var(--accent-hover);
 }
