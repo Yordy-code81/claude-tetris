@@ -67,13 +67,39 @@ body {
   margin-bottom: 16px;
 }
 
+/* ---- Barra superior: skin + tema ---- */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  align-self: stretch;
+  margin-bottom: 8px;
+}
+
+.skin-picker {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--text-soft);
+}
+
+#skin-select {
+  background: var(--kbd-bg);
+  color: var(--text);
+  border: 1px solid var(--kbd-border);
+  border-radius: 4px;
+  padding: 3px 6px;
+  font-size: 12px;
+  font-family: inherit;
+  cursor: pointer;
+}
+
 /* ---- Toggle de tema ---- */
 #theme-toggle {
   display: flex;
   align-items: center;
   gap: 10px;
-  align-self: flex-end;
-  margin-bottom: 8px;
   background: none;
   border: none;
   color: var(--text-soft);
@@ -158,6 +184,17 @@ body {
   border: 1px solid var(--border);
   background: var(--panel-bg);
   border-radius: 4px;
+}
+
+/* ---- Skin Neon: tablero siempre negro, con halo ---- */
+[data-skin="neon"] #board,
+[data-skin="neon"] #next-canvas {
+  background: #000;
+  border-color: #1f1f3a;
+}
+
+[data-skin="neon"] #board {
+  box-shadow: 0 0 40px rgba(0, 240, 255, 0.18);
 }
 
 /* ---- Controles ---- */
