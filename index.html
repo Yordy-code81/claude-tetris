@@ -7,16 +7,24 @@
   <script>
     try {
       if (localStorage.getItem('theme') === 'light') document.documentElement.dataset.theme = 'light';
+      // sin variables globales: game.js declara `let skin` y chocaría con un `var skin`
+      if (localStorage.getItem('skin')) document.documentElement.dataset.skin = localStorage.getItem('skin');
     } catch (e) {}
   </script>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div class="app">
-  <button id="theme-toggle" type="button" role="switch" aria-checked="false" aria-label="Modo claro">
-    <span id="theme-label">Modo claro</span>
-    <span class="switch-track"><span class="switch-thumb"></span></span>
-  </button>
+  <div class="topbar">
+    <label class="skin-picker">
+      <span>Skin</span>
+      <select id="skin-select" aria-label="Apariencia de los bloques"></select>
+    </label>
+    <button id="theme-toggle" type="button" role="switch" aria-checked="false" aria-label="Modo claro">
+      <span id="theme-label">Modo claro</span>
+      <span class="switch-track"><span class="switch-thumb"></span></span>
+    </button>
+  </div>
   <h1 class="title">TETRIS</h1>
   <div class="wrapper">
     <div class="game-container">
