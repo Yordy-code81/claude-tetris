@@ -118,7 +118,7 @@ body {
 #board {
   display: block;
   border: 1px solid var(--border);
-  background: var(--panel-bg);
+  background: var(--board-bg, var(--panel-bg));
   border-radius: 4px;
   box-shadow: 0 0 40px var(--shadow);
 }
@@ -156,8 +156,42 @@ body {
 #next-canvas {
   display: block;
   border: 1px solid var(--border);
-  background: var(--panel-bg);
+  background: var(--board-bg, var(--panel-bg));
   border-radius: 4px;
+}
+
+/* ---- Skins ---- */
+/* Fondo del tablero y de la vista previa según el skin (data-skin en <html>).
+   Retro no define --board-bg y usa el del tema. */
+[data-skin="neon"] {
+  --board-bg: #000000;
+}
+
+[data-skin="pastel"] {
+  --board-bg: #2a2635;
+}
+
+[data-theme="light"][data-skin="pastel"] {
+  --board-bg: #fdf8f3;
+}
+
+[data-skin="pixel"] {
+  --board-bg: #14141c;
+}
+
+[data-theme="light"][data-skin="pixel"] {
+  --board-bg: #e8eaf2;
+}
+
+#skin-select {
+  background: var(--kbd-bg);
+  color: var(--text);
+  border: 1px solid var(--kbd-border);
+  border-radius: 4px;
+  padding: 4px 6px;
+  font-size: 12px;
+  font-family: inherit;
+  cursor: pointer;
 }
 
 /* ---- Controles ---- */

@@ -8,6 +8,11 @@
     try {
       if (localStorage.getItem('theme') === 'light') document.documentElement.dataset.theme = 'light';
     } catch (e) {}
+    // mantener esta lista sincronizada con las claves de SKINS en game.js
+    try {
+      var savedSkin = localStorage.getItem('skin');
+      if (['retro', 'neon', 'pastel', 'pixel'].indexOf(savedSkin) !== -1) document.documentElement.dataset.skin = savedSkin;
+    } catch (e) {}
   </script>
   <link rel="stylesheet" href="style.css" />
 </head>
@@ -39,6 +44,11 @@
         <div class="panel-section">
           <span class="label">NEXT</span>
           <canvas id="next-canvas" width="120" height="120"></canvas>
+        </div>
+
+        <div class="panel-section">
+          <label class="label" for="skin-select">SKIN</label>
+          <select id="skin-select"></select>
         </div>
 
         <div class="panel-section controls">
