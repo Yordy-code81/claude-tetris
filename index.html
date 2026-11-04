@@ -48,7 +48,7 @@
             <li><kbd>↑</kbd> rotar</li>
             <li><kbd>↓</kbd> bajar</li>
             <li><kbd>Space</kbd> caída</li>
-            <li><kbd>P</kbd> pausa</li>
+            <li><kbd>P</kbd><kbd>Esc</kbd> pausa</li>
           </ul>
         </div>
       </aside>
@@ -58,6 +58,37 @@
       <div class="overlay-box">
         <p id="overlay-title">GAME OVER</p>
         <p id="overlay-score"></p>
+
+        <div id="pause-menu" class="pause-menu" hidden>
+          <div id="pause-main" class="menu-view" role="menu" aria-label="Menú de pausa">
+            <button id="resume-btn" class="menu-btn" type="button" role="menuitem" data-menu-item>Reanudar</button>
+            <button id="menu-restart-btn" class="menu-btn" type="button" role="menuitem" data-menu-item>Reiniciar</button>
+            <button id="controls-btn" class="menu-btn" type="button" role="menuitem" data-menu-item>Ver controles</button>
+            <div class="menu-level">
+              <span class="menu-level-label" id="start-level-label">Nivel inicial</span>
+              <div id="start-level-row" class="level-stepper" tabindex="0" role="spinbutton"
+                   aria-labelledby="start-level-label" aria-valuemin="1" aria-valuemax="10" aria-valuenow="1" data-menu-item>
+                <button id="level-dec" class="level-arrow" type="button" tabindex="-1" aria-label="Bajar nivel inicial">‹</button>
+                <span id="start-level">1</span>
+                <button id="level-inc" class="level-arrow" type="button" tabindex="-1" aria-label="Subir nivel inicial">›</button>
+              </div>
+              <span class="menu-hint">Se aplica en la próxima partida</span>
+            </div>
+          </div>
+
+          <div id="pause-controls" class="menu-view" hidden>
+            <ul class="menu-controls">
+              <li><span><kbd>←</kbd><kbd>→</kbd></span> mover</li>
+              <li><span><kbd>↑</kbd><kbd>X</kbd></span> rotar</li>
+              <li><span><kbd>↓</kbd></span> bajar (soft drop)</li>
+              <li><span><kbd>Space</kbd></span> caída instantánea</li>
+              <li><span><kbd>P</kbd><kbd>Esc</kbd></span> pausa / reanudar</li>
+            </ul>
+            <p class="menu-hint">En el menú: <kbd>↑</kbd><kbd>↓</kbd> navegar, <kbd>←</kbd><kbd>→</kbd> nivel, <kbd>Enter</kbd> elegir</p>
+            <button id="controls-back-btn" class="menu-btn" type="button" data-menu-item>Volver</button>
+          </div>
+        </div>
+
         <button id="restart-btn">Reiniciar</button>
       </div>
     </div>

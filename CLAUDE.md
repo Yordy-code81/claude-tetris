@@ -19,7 +19,7 @@ To verify a change, reload the page and play. There are no automated checks.
 
 ## Architecture
 
-All logic lives in `game.js`. It is one non-module script (`'use strict'`) loaded at the end of `index.html`, and it relies on the DOM element IDs defined there (`board`, `next-canvas`, `score`, `lines`, `level`, `overlay`, `overlay-title`, `overlay-score`, `restart-btn`, `theme-toggle`, `theme-label`). If you rename an ID in one file, rename it in the other.
+All logic lives in `game.js`. It is one non-module script (`'use strict'`) loaded at the end of `index.html`, and it relies on the DOM element IDs defined there (`board`, `next-canvas`, `score`, `lines`, `level`, `overlay`, `overlay-title`, `overlay-score`, `restart-btn`, `theme-toggle`, `theme-label`, plus the pause menu: `pause-menu`, `pause-main`, `pause-controls`, `resume-btn`, `menu-restart-btn`, `controls-btn`, `controls-back-btn`, `start-level-row`, `level-dec`, `level-inc`, `start-level`). If you rename an ID in one file, rename it in the other.
 
 Key design points that span the code:
 
@@ -27,10 +27,11 @@ Key design points that span the code:
 - **Cell value = piece type = color index**: `PIECES[i]` matrices are filled with the value `i`, and `COLORS[i]` is that piece's color. Board cells hold `0` (empty) or that index. Index 0 is `null` in both arrays. Adding a piece type means extending both arrays (`randomPiece()` uses `PIECES.length - 1`). Index 8 is the challenge piece "tuerca" (`NUT`), a 3×3 ring with an empty center; `drawNutHole()` draws the circle in its center for the current piece, the ghost and the preview only (it is not stored on the board).
 - **Pieces** are square matrices. Rotation is clockwise only (`rotateCW`), with naive horizontal wall kicks `[0,-1,1,-2,2]` in `tryRotate`. This is not SRS.
 - **Collision** (`collide(shape, x, y)`) is the single source of truth for movement, rotation, the ghost piece (`ghostY`), locking and game over. Cells with `y < 0` are allowed above the board.
-- **Game loop**: `requestAnimationFrame` accumulates `dt` into `dropAccum` and applies gravity when it exceeds `dropInterval`. Pause and game over stop the loop with `cancelAnimationFrame(animId)`, and resume restarts it by calling `loop()` with a fresh `lastTime`.
+- **Game loop**: `requestAnimationFrame` accumulates `dt` into `dropAccum` and applies gravity when it exceeds `dropInterval`. Pause and game over stop the loop with `cancelAnimationFrame(animId)`, and `resumeGame()` restarts it with `requestAnimationFrame(loop)` after resetting `lastTime`.
 - **Lock sequence**: `lockPiece()` → `merge()` → `clearLines()` (which updates score, level and speed) → `spawn()`. Game over happens in `spawn()` when the new piece immediately collides.
-- **Overlay**: a single `#overlay` element serves both PAUSA and GAME OVER. The text is set in `togglePause()` and `endGame()`, and the `hidden` class toggles it.
-- **Scoring and speed**: line clears use `LINE_SCORES[n] * level`, hard drop adds +2 per cell and soft drop adds +1 per row. Level is `floor(lines/10)+1` and `dropInterval = max(100, 1000 - (level-1)*90)`.
+- **Overlay**: a single `#overlay` element serves both PAUSA and GAME OVER. `showOverlay(mode)` / `hideOverlay()` toggle its `hidden` class and switch between `#pause-menu` (pause) and `#restart-btn` (game over) using the `hidden` attribute. `pauseGame()` / `resumeGame()` replace the old toggle (keys `P` or `Escape`).
+- **Pause menu input**: while `paused`, every keydown goes to `handleMenuKey()` and never reaches the game (↑/↓ move focus over `[data-menu-item]`, ←/→ change the start level, Enter/Space use native button activation). Keys pressed while the menu was open go into `heldDuringMenu` and are ignored by the game until their `keyup`, so a held key does not move the piece on resume. `hideOverlay()` blurs the focused menu button so Space can't re-click it.
+- **Scoring and speed**: line clears use `LINE_SCORES[n] * level`, hard drop adds +2 per cell and soft drop adds +1 per row. Level is `baseLevel + floor(lines/10)` and `dropInterval = speedFor(level) = max(100, 1000 - (level-1)*90)`. `startLevel` (1–`MAX_START_LEVEL`, saved in `localStorage`) is picked in the pause menu; `init()` copies it to `baseLevel`, so changing it mid-game only affects the next game.
 
 ## Gotchas
 

@@ -240,3 +240,139 @@ kbd {
 #restart-btn:hover {
   background: var(--accent-hover);
 }
+
+[hidden] {
+  display: none !important;
+}
+
+/* ---- Menú de pausa ---- */
+.pause-menu {
+  width: 240px;
+}
+
+.menu-view {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: stretch;
+}
+
+.menu-btn {
+  background: var(--panel-bg);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 10px 16px;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.menu-btn:hover,
+.menu-btn:focus-visible,
+.menu-btn:focus {
+  outline: none;
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+#resume-btn {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--btn-text);
+}
+
+#resume-btn:hover,
+#resume-btn:focus {
+  background: var(--accent-hover);
+  border-color: var(--text);
+  color: var(--btn-text);
+}
+
+.menu-level {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.menu-level-label {
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: var(--muted);
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.level-stepper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 4px 8px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--panel-bg);
+}
+
+.level-stepper:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+#start-level {
+  min-width: 2ch;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.level-arrow {
+  background: none;
+  border: none;
+  color: var(--text-soft);
+  font-size: 22px;
+  line-height: 1;
+  padding: 2px 8px;
+  cursor: pointer;
+}
+
+.level-arrow:hover:not(:disabled) {
+  color: var(--accent);
+}
+
+.level-arrow:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.menu-hint {
+  font-size: 11px;
+  color: var(--text-soft);
+}
+
+.menu-controls {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  text-align: left;
+}
+
+.menu-controls li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--text-soft);
+}
+
+.menu-controls li > span {
+  display: flex;
+  gap: 4px;
+  min-width: 84px;
+  justify-content: flex-end;
+}
