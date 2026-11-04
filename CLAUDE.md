@@ -19,7 +19,7 @@ To verify a change, reload the page and play. There are no automated checks.
 
 ## Architecture
 
-All logic lives in `game.js`. It is one non-module script (`'use strict'`) loaded at the end of `index.html`, and it relies on the DOM element IDs defined there (`board`, `next-canvas`, `score`, `lines`, `level`, `overlay`, `overlay-title`, `overlay-score`, `restart-btn`, `theme-toggle`, `theme-label`). If you rename an ID in one file, rename it in the other.
+All logic lives in `game.js`. It is one non-module script (`'use strict'`) loaded at the end of `index.html`, and it relies on the DOM element IDs defined there (`board`, `next-canvas`, `score`, `lines`, `level`, `overlay`, `overlay-title`, `overlay-score`, `restart-btn`, `resume-btn`, `controls-btn`, `controls-list`, `start-level`, `theme-toggle`, `theme-label`). If you rename an ID in one file, rename it in the other.
 
 Key design points that span the code:
 
@@ -29,8 +29,9 @@ Key design points that span the code:
 - **Collision** (`collide(shape, x, y)`) is the single source of truth for movement, rotation, the ghost piece (`ghostY`), locking and game over. Cells with `y < 0` are allowed above the board.
 - **Game loop**: `requestAnimationFrame` accumulates `dt` into `dropAccum` and applies gravity when it exceeds `dropInterval`. Pause and game over stop the loop with `cancelAnimationFrame(animId)`, and resume restarts it by calling `loop()` with a fresh `lastTime`.
 - **Lock sequence**: `lockPiece()` → `merge()` → `clearLines()` (which updates score, level and speed) → `spawn()`. Game over happens in `spawn()` when the new piece immediately collides.
-- **Overlay**: a single `#overlay` element serves both PAUSA and GAME OVER. The text is set in `togglePause()` and `endGame()`, and the `hidden` class toggles it.
-- **Scoring and speed**: line clears use `LINE_SCORES[n] * level`, hard drop adds +2 per cell and soft drop adds +1 per row. Level is `floor(lines/10)+1` and `dropInterval = max(100, 1000 - (level-1)*90)`.
+- **Overlay / pause menu**: a single `#overlay` element serves both PAUSA and GAME OVER. `pause()`/`endGame()` set the text and call `showOverlay(mode)`, which sets `data-mode="pause"|"gameover"`; CSS uses that to hide Reanudar and Ver controles on GAME OVER. `hideOverlay()` hides it and blurs any focused menu button so Space/Enter don't trigger it during play. `P` and `Escape` call `togglePause()`.
+- **Input blocking**: while the menu is open, game keys do nothing and are added to `blockedKeys`; they stay ignored (including auto-repeat) until their `keyup`, so a key held in the menu doesn't move the piece on resume.
+- **Scoring and speed**: line clears use `LINE_SCORES[n] * level`, hard drop adds +2 per cell and soft drop adds +1 per row. Level is `max(startLevel, floor(lines/10)+1)` and `dropInterval = speedFor(level) = max(100, 1000 - (level-1)*90)`. `startLevel` (1–`MAX_START_LEVEL`) is chosen in the menu, saved in `localStorage` and applied by `init()` on the next game.
 
 ## Gotchas
 
