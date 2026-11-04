@@ -19,7 +19,7 @@ To verify a change, reload the page and play. There are no automated checks.
 
 ## Architecture
 
-All logic lives in `game.js`. It is one non-module script (`'use strict'`) loaded at the end of `index.html`, and it relies on the DOM element IDs defined there (`board`, `next-canvas`, `score`, `lines`, `level`, `overlay`, `overlay-title`, `overlay-score`, `restart-btn`, `theme-toggle`, `theme-label`, `skin-select`). If you rename an ID in one file, rename it in the other.
+All logic lives in `game.js`. It is one non-module script (`'use strict'`) loaded at the end of `index.html`, and it relies on the DOM element IDs defined there (`board`, `next-canvas`, `score`, `lines`, `level`, `overlay`, `overlay-title`, `overlay-score`, `restart-btn`, `theme-toggle`, `theme-label`, `skin-select`, `pause-menu`, `resume-btn`, `pause-restart-btn`, `controls-btn`, `pause-controls`, `start-level`). If you rename an ID in one file, rename it in the other.
 
 Key design points that span the code:
 
@@ -30,8 +30,10 @@ Key design points that span the code:
 - **Collision** (`collide(shape, x, y)`) is the single source of truth for movement, rotation, the ghost piece (`ghostY`), locking and game over. Cells with `y < 0` are allowed above the board.
 - **Game loop**: `requestAnimationFrame` accumulates `dt` into `dropAccum` and applies gravity when it exceeds `dropInterval`. Pause and game over stop the loop with `cancelAnimationFrame(animId)`, and resume restarts it by calling `loop()` with a fresh `lastTime`.
 - **Lock sequence**: `lockPiece()` → `merge()` → `clearLines()` (which updates score, level and speed) → `spawn()`. Game over happens in `spawn()` when the new piece immediately collides.
-- **Overlay**: a single `#overlay` element serves both PAUSA and GAME OVER. The text is set in `togglePause()` and `endGame()`, and the `hidden` class toggles it.
-- **Scoring and speed**: line clears use `LINE_SCORES[n] * level`, hard drop adds +2 per cell and soft drop adds +1 per row. Level is `floor(lines/10)+1` and `dropInterval = max(100, 1000 - (level-1)*90)`.
+- **Overlays**: `#overlay` is GAME OVER only (text set in `endGame()`). Pause uses its own `#pause-menu` (Reanudar, Reiniciar, Ver controles, Nivel inicial `<select>`), shown/hidden by `showPauseMenu()`/`hidePauseMenu()` from `togglePause()`; `init()` also calls `hidePauseMenu()`. Both use the `hidden` class.
+- **Pause menu and input lock** (section `// ---- Menú de pausa ----`): `KeyP` and `Escape` toggle pause. Every keydown goes through `handlePauseKeys(e)` first; it returns `true` when the game must ignore the event. While paused all game keys are ignored (and `preventDefault`ed unless a menu button/select has focus, so the select stays usable). `heldKeys` tracks keys currently down; on resume `hidePauseMenu()` copies it into `blockedKeys`, and those keys are ignored until their `keyup`. A repeat keydown for a key never seen going down also blocks that key until its `keyup`, and window `blur` clears both sets. Escape on the focused select does not toggle pause (it closes the dropdown). `hidePauseMenu()` blurs the focused element so Space/Enter/arrows cannot re-trigger a menu button or the select during play.
+- **Start level**: `startLevel` (1–10, persisted in `localStorage` key `startLevel`) is the menu setting for the *next* game; `init()` copies it into `baseLevel`. `levelForLines(lines)` = `baseLevel + floor(lines/10)` and `intervalForLevel(level)` derive level and speed in both `init()` and `clearLines()`.
+- **Scoring and speed**: line clears use `LINE_SCORES[n] * level`, hard drop adds +2 per cell and soft drop adds +1 per row. Level is `baseLevel + floor(lines/10)` (`baseLevel` = start level chosen in the pause menu, default 1) and `dropInterval = max(100, 1000 - (level-1)*90)`.
 
 ## Gotchas
 
